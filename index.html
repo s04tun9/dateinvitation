@@ -1,289 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Floral Date Invitation</title>
-    <style>
-        body {margin:0; font-family: 'Pacifico', cursive; overflow-x: hidden;}
-        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Great+Vibes&display=swap');
-        
-        .page {
-            display: none;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            padding: 20px;
-            transition: 1s;
-            background-size: cover;
-            text-align: center;
-        }
-        
-        .active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        
-        /* Pastel Color Scheme */
-        #page1 { background: linear-gradient(135deg, #f8e3f0 0%, #f0d4e6 100%); }
-        #page2 { background: linear-gradient(135deg, #e3f2fd 0%, #d7e9fa 100%); }
-        #page3 { background: linear-gradient(135deg, #ffe6eb 0%, #ffdde4 100%); }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Romantic Date Planner</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            max-width: 600px;
-            margin: 20px 10px 20px 20px; /* top right bottom left */
-            padding: 20px;
-            background: rgba(255,255,255,0.9);
-            border-radius: 15px;
-        }
+    body {
+      margin: 0;
+      font-family: 'Pacifico', cursive;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+      background: #fff0f5;
+    }
 
-        .calendar-day {
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-radius: 8px;
-        }
+    /* Continuous background container for flying flowers */
+    #backgroundFlowers {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -2;
+    }
 
-        .flower {
-            position: fixed;
-            animation: float 6s infinite linear;
-            pointer-events: none;
-            z-index: -1;
-            filter: brightness(1.1);
-        }
+    /* Page styling with smooth fade transitions */
+    .page {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+      text-align: center;
+      box-sizing: border-box;
+      transition: opacity 1s ease;
+      opacity: 0;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+    
+    .page.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
 
-        .love-letter {
-            background: #fff url('data:image/png;base64,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');
-            padding: 30px;
-            max-width: 500px;
-            margin: 20px auto;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            position: relative;
-        }
+    /* Color Schemes */
+    #page0 { background: linear-gradient(135deg, #f3d7e8 0%, #e8c8df 100%); }
+    #page1 { background: linear-gradient(135deg, #f8e3f0 0%, #f0d4e6 100%); }
+    #page2 { background: linear-gradient(135deg, #e3f2fd 0%, #d7e9fa 100%); }
+    #page3 { background: linear-gradient(135deg, #ffe6eb 0%, #ffdde4 100%); }
 
-        .selected-date {
-            background: #ffb3d9 !important;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(110vh) rotate(0deg); }
-            100% { transform: translateY(-10vh) rotate(360deg); }
-        }
-
-        .flower.small { font-size: 20px; opacity: 0.7; }
-        .flower.medium { font-size: 35px; }
-        .flower.large { font-size: 50px; opacity: 0.9; }
-
-        .nav-button {
-            background: #ff94b2;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 25px;
-            border: none;
-            font-size: 18px;
-            margin-top: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .nav-button:hover {
-            background: #ff7a9f;
-            transform: translateY(-2px);
-        }
-
-        .time-selection {
-            display: none;
-            margin-top: 20px;
-        }
-        /* Mobile adjustments */
-@media (max-width: 768px) {
     .calendar-grid {
-        max-width: 95%;
-        margin: 20px 10px 20px 10px !important;
-        padding: 10px !important;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      width: 90%;
     }
-    
+
     .calendar-day {
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s, background 0.3s;
+      border-radius: 8px;
+      font-size: 1.1em;
+    }
+
+    .selected-date {
+      background: #ffb3d9 !important;
+      transform: scale(1.1);
+    }
+
+    .flower {
+      position: absolute;
+      pointer-events: none;
+      filter: brightness(1.1);
+      font-size: 1.5em;
+      animation: float 6s linear forwards;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    .nav-button {
+      background: #ff94b2;
+      color: white;
+      padding: 12px 30px;
+      border-radius: 25px;
+      border: none;
+      font-size: 1.2em;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: transform 0.3s;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .thank-you-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+      .calendar-grid {
         padding: 10px !important;
-        font-size: 14px;
+        grid-gap: 3px;
+      }
+      
+      .calendar-day {
+        padding: 10px !important;
+        font-size: 1em;
+      }
+      
+      .nav-button {
+        font-size: 1em;
+        padding: 10px 25px;
+      }
+      
+      h1 {
+        font-size: 1.5em !important;
+      }
     }
-    
-    #page1 h1 {
-        font-size: 1.5rem;
-        padding: 0 15px;
-    }
-    
-    .time-selection {
-        width: 90%;
-        margin-left: 5%;
-    }
-}
-    </style>
+  </style>
 </head>
 <body>
-    <!-- Page 1 - Interactive Calendar -->
-    <div id="page1" class="page active">
-        <h1 style="color: #9d6381; margin-bottom: 20px;">Choose Our Special Day 🌸</h1>
-        <div class="calendar-grid"></div>
-        
-        <div class="time-selection">
-            <h3 style="color: #7d5a5a; margin: 15px 0;">Choose Your Preferred Time ⏰</h3>
-            <input type="time" id="meeting-time" value="20:30" 
-                   style="font-size: 20px; padding: 10px; border-radius: 15px; border: 2px solid #ff85a2;">
-        </div>
-        
-        <button class="nav-button" id="next1" style="display: none;">Next 🌸</button>
-        <div id="flowers1"></div>
+  <!-- Continuous Background Flowers -->
+  <div id="backgroundFlowers"></div>
+
+  <!-- Intro Page -->
+  <div id="page0" class="page active">
+    <h1 style="color: #9d6381;">Aidana'ya,</h1>
+    <p style="font-size: 1.5em; color: #7d5a5a;">Benimle gece yürüyüşüne çıkmak ister misin?🌙</p>
+    <div style="margin: 30px;">
+      <button id="introYes" class="nav-button">Kesinlikle!🪷</button>
+      <button id="introNo" class="nav-button">Belki...🙃</button>
     </div>
+    <div id="introFlowers"></div>
+  </div>
 
-    <!-- Page 2 - Address Collection -->
-    <div id="page2" class="page">
-        <h1 style="color: #6b5b95; margin-bottom: 30px;">Where Shall I Find You? 🌹</h1>
-        <form id="addressForm">
-            <input type="hidden" name="date" id="formDate">
-            <input type="hidden" name="time" id="formTime">
-            <textarea name="address" placeholder="Your magical location..." 
-                     style="width:300px; height:100px; border:2px solid #ff85a2;
-                            border-radius: 15px; padding: 15px; font-size: 16px;"></textarea>
-            <button class="nav-button" type="submit" style="margin-top: 30px;">Next 🌊</button>
-        </form>
-        <div id="flowers2"></div>
+  <!-- Page 1 - Calendar -->
+  <div id="page1" class="page">
+    <h1 style="color: #9d6381;">Bir Gün Seç🪻</h1>
+    <div class="calendar-grid"></div>
+    <div class="time-selection" style="display: none;">
+      <h3 style="color: #7d5a5a;">Tercih Ettiğin Zamanı Seç⏰</h3>
+      <input type="time" id="meeting-time" value="20:30" style="font-size: 1.2em;">
     </div>
+    <button class="nav-button" id="next1" style="display: none;">Next✿</button>
+    <div id="flowers1"></div>
+  </div>
 
-    <!-- Page 3 - Love Letter -->
-    <div id="page3" class="page">
-        <div class="love-letter">
-            <div id="letter-closed" style="text-align:center; cursor:pointer;">
-                <div style="font-size:50px;">🌹</div>
-                <p style="color: #7d5a5a;">Click the rose to open your letter</p>
-            </div>
-            <div id="letter-content" style="display:none;">
-                <h2 style="color: #9d6381;">My Dearest,</h2>
-                <p style="color: #666; line-height: 1.6;">
-                    Our special moment:<br>
-                    📅 <span id="finalDate">April 2, 2025</span><br>
-                    ⏰ <span id="finalTime">8:30 PM</span><br>
-                    🏡 <span id="finalAddress"></span>
-                </p>
-                <textarea id="love-note" placeholder="Write your heart's message..." 
-                         style="display:none; width:100%; height:80px; margin-top:20px;
-                                padding: 10px; border-radius: 10px; border: 2px solid #ff85a2;"></textarea>
-                <button class="nav-button" id="finalConfirm" style="margin-top: 20px; display: none;">
-                    Confirm 💌
-                </button>
-            </div>
-        </div>
-        <div id="flowers3"></div>
+  <!-- Page 2 - Address -->
+  <div id="page2" class="page">
+    <h1 style="color: #6b5b95;">Nerede Buluşabiliriz?💐</h1>
+    <form id="addressForm">
+      <textarea name="address" placeholder="Konumun..." 
+                style="width: 90%; max-width: 400px; height: 100px; padding: 15px; 
+                border-radius: 15px; border: 2px solid #ff85a2; font-size: 1.1em;" required></textarea>
+      <button class="nav-button" type="submit">Next✿</button>
+    </form>
+    <div id="flowers2"></div>
+  </div>
+
+  <!-- Page 3 - Confirmation -->
+  <div id="page3" class="page">
+    <div style="background: white; padding: 30px; border-radius: 20px; 
+         box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); max-width: 500px; width: 90%;">
+      <h2 style="color: #9d6381;">🌷Tarihi Kaydet🌷</h2>
+      <div style="font-size: 1.2em; line-height: 1.5;">
+        Seni görmek için sabırsızlanıyorum, Aidana🌼:<br>
+        <p>📅 <span id="finalDate"></span></p>
+        <p>⏰ <span id="finalTime"></span></p>
+        <p>🏡 <span id="finalAddress"></span></p>
+      </div>
+      <textarea id="bana gönder" placeholder="Bana her şeyi yaz..." 
+                style="width: 100%; height: 100px; padding: 15px; margin: 20px 0; 
+                border-radius: 15px; border: 2px solid #ff85a2; font-size: 1.1em;"></textarea>
+      <button class="nav-button" id="finalSend">Send 💌</button>
     </div>
+    <div id="flowers3"></div>
+  </div>
 
-    <script>
-        // Calendar Generation
-        function generateCalendar(month, year) {
-            const calendarGrid = document.querySelector('.calendar-grid');
-            calendarGrid.innerHTML = '';
-            
-            const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            daysOfWeek.forEach(day => {
-                calendarGrid.innerHTML += `<div class="calendar-header">${day}</div>`;
-            });
+  <!-- Thank You Popup -->
+  <div class="thank-you-overlay" id="thankYou">
+    <div style="background: white; padding: 30px 50px; border-radius: 20px; 
+         box-shadow: 0 0 30px rgba(255, 105, 180, 0.3);">
+      <h2 style="color: #ff69b4;">Thank You Aidana 💖</h2>
+      <p style="font-size: 1.2em;">O zaman görüşürüz 🌸</p>
+    </div>
+  </div>
 
-            const date = new Date(year, month, 1);
-            const firstDay = date.getDay();
-            
-            let dayCounter = 1;
-            for(let i = 0; i < 42; i++) {
-                const cell = document.createElement('div');
-                if(i >= firstDay && dayCounter <= 30) {
-                    cell.className = `calendar-day${dayCounter === 2 ? ' selected-date' : ''}`;
-                    cell.textContent = dayCounter;
-                    cell.dataset.date = `${year}-${String(month+1).padStart(2, '0')}-${String(dayCounter).padStart(2, '0')}`;
-                    cell.addEventListener('click', handleDateSelect);
-                    dayCounter++;
-                }
-                calendarGrid.appendChild(cell);
-            }
+  <script>
+    // Function to create a burst of flowers during transitions or button clicks
+    function createFlowerTransition(container, count = 30) {
+      const flowers = ['🌸','🌺','🌻','🌼','🌷','💮','🏵️','🥀','🌹','🌷','🍁','🍂','☘️'];
+      for(let i = 0; i < count; i++) {
+        const flower = document.createElement('div');
+        flower.className = 'flower';
+        flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
+        flower.style.left = Math.random() * 100 + 'vw';
+        flower.style.top = Math.random() * 100 + 'vh';
+        flower.style.animationDuration = `${4 + Math.random() * 3}s`;
+        document.getElementById(container).appendChild(flower);
+        setTimeout(() => flower.remove(), 5000);
+      }
+    }
+
+    // Continuous background flowers effect
+    function startContinuousFlowers() {
+      const backgroundContainer = document.getElementById('backgroundFlowers');
+      const flowers = ['🌸','🌺','🌻','🌼','🌷','💮','🏵️','🥀','🌹','🌷','🍁','🍂','☘️'];
+      setInterval(() => {
+        const flower = document.createElement('div');
+        flower.className = 'flower';
+        flower.innerHTML = flowers[Math.floor(Math.random() * flowers.length)];
+        flower.style.left = Math.random() * 100 + 'vw';
+        flower.style.top = '110vh';
+        flower.style.animationDuration = `${6 + Math.random() * 4}s`;
+        backgroundContainer.appendChild(flower);
+        setTimeout(() => flower.remove(), 10000);
+      }, 800);
+    }
+
+    // Intro Page Logic
+    let noClicks = 0;
+    document.getElementById('introNo').addEventListener('click', function() {
+      if(noClicks === 0) {
+        this.textContent = "Are you sureee? 🥺";
+        this.style.transform = 'scale(0.8)';
+        document.getElementById('introYes').style.transform = 'scale(1.2)';
+        noClicks++;
+      } else {
+        this.style.display = 'none';
+      }
+    });
+
+    document.getElementById('introYes').addEventListener('click', function() {
+      createFlowerTransition('introFlowers');
+      setTimeout(() => showPage(1), 800);
+    });
+
+    // Calendar Generation
+    function generateCalendar() {
+      const calendarGrid = document.querySelector('.calendar-grid');
+      const year = 2025;
+      const month = 3; // April
+      calendarGrid.innerHTML = '';
+      
+      ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+        calendarGrid.innerHTML += `<div class="calendar-header">${day}</div>`;
+      });
+
+      const firstDay = new Date(year, month, 1).getDay();
+      let date = 1;
+      for(let i = 0; i < 42; i++) {
+        const cell = document.createElement('div');
+        if(i >= firstDay && date <= 30) {
+          cell.className = `calendar-day${date === 2 ? ' selected-date' : ''}`;
+          cell.textContent = date;
+          cell.dataset.date = `${year}-${String(month+1).padStart(2,'0')}-${String(date).padStart(2,'0')}`;
+          cell.addEventListener('click', handleDateSelect);
+          date++;
+        } else {
+          cell.textContent = '';
         }
+        calendarGrid.appendChild(cell);
+      }
+    }
 
-        function handleDateSelect(e) {
-            document.querySelectorAll('.calendar-day').forEach(day => 
-                day.classList.remove('selected-date'));
-            e.target.classList.add('selected-date');
-            document.querySelector('.time-selection').style.display = 'block';
-            document.getElementById('next1').style.display = 'inline-block';
-        }
+    function handleDateSelect(e) {
+      document.querySelectorAll('.calendar-day').forEach(day => {
+        day.classList.remove('selected-date');
+      });
+      e.target.classList.add('selected-date');
+      document.querySelector('.time-selection').style.display = 'block';
+      document.getElementById('next1').style.display = 'inline-block';
+    }
 
-        // Flower Generation
-        const flowerTypes = ['🌸','🌺','🌻','🌼','🌷','💮','🏵️','🥀','🌱','🌿','🍃','🍀','🎍','🪴','🌾','🌹'];
+    // Page Navigation with smooth fading
+    function showPage(pageNumber) {
+      createFlowerTransition(`flowers${pageNumber}`);
+      // Remove active class from current page
+      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+      // After a slight delay, fade in the target page
+      setTimeout(() => {
+        document.getElementById(`page${pageNumber}`).classList.add('active');
+      }, 500);
+    }
 
-        function createFlowers(container, count) {
-            const sizes = ['small', 'medium', 'large'];
-            for(let i = 0; i < count; i++) {
-                const flower = document.createElement('div');
-                flower.className = `flower ${sizes[Math.floor(Math.random()*sizes.length)]}`;
-                flower.innerHTML = flowerTypes[Math.floor(Math.random()*flowerTypes.length)];
-                flower.style.left = `${Math.random()*100}vw`;
-                flower.style.animationDuration = `${4 + Math.random()*8}s`;
-                document.getElementById(container).appendChild(flower);
-            }
-        }
+    document.getElementById('next1').addEventListener('click', () => {
+      createFlowerTransition('flowers2');
+      setTimeout(() => showPage(2), 500);
+    });
+    
+    document.getElementById('addressForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Update confirmation details
+      document.getElementById('finalDate').textContent = 
+        new Date(document.querySelector('.selected-date').dataset.date)
+          .toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'});
+      document.getElementById('finalTime').textContent = document.getElementById('meeting-time').value;
+      document.getElementById('finalAddress').textContent = 
+        document.querySelector('textarea[name="address"]').value;
+      createFlowerTransition('flowers3');
+      setTimeout(() => showPage(3), 500);
+    });
 
-        // Love Letter Interaction
-        document.getElementById('letter-closed').addEventListener('click', function() {
-            this.style.transform = 'scale(0)';
-            setTimeout(() => {
-                this.style.display = 'none';
-                document.getElementById('letter-content').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('love-note').style.display = 'block';
-                    document.getElementById('finalConfirm').style.display = 'inline-block';
-                }, 500);
-            }, 300);
-        });
+    // Final Submission
+    document.getElementById('finalSend').addEventListener('click', function(e) {
+      e.preventDefault();
+      const formData = {
+        date: document.querySelector('.selected-date').dataset.date,
+        time: document.getElementById('meeting-time').value,
+        address: document.querySelector('textarea[name="address"]').value,
+        note: document.getElementById('love-note').value
+      };
 
-        // Form Handling
-        document.getElementById('addressForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                date: document.querySelector('.selected-date').dataset.date,
-                time: document.getElementById('meeting-time').value,
-                address: document.querySelector('textarea').value,
-                note: document.getElementById('love-note').value
-            };
+      fetch('https://formspree.io/f/xeoalavq', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(formData)
+      }).then(() => {
+        document.getElementById('thankYou').style.display = 'flex';
+        createFlowerTransition('thankYou', 50);
+      });
+    });
 
-            fetch('https://formspree.io/f/xeoalavq', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(formData)
-            }).then(() => {
-                showPage(3);
-                document.getElementById('finalAddress').textContent = formData.address;
-                document.getElementById('finalDate').textContent = 
-                    new Date(formData.date).toLocaleDateString('en-US', 
-                    { month: 'long', day: 'numeric', year: 'numeric' });
-                document.getElementById('finalTime').textContent = 
-                    new Date(`1970-01-01T${formData.time}`).toLocaleTimeString('en-US', 
-                    { hour: 'numeric', minute: '2-digit' });
-            });
-        });
-
-        // Navigation
-        document.getElementById('next1').addEventListener('click', () => showPage(2));
-
-        function showPage(pageNumber) {
-            document.querySelector('.active').classList.remove('active');
-            document.getElementById(`page${pageNumber}`).classList.add('active');
-            if(pageNumber === 3) createHearts();
-        }
-
-        // Initialization
-        generateCalendar(3, 2025); // April 2025
-        createFlowers('flowers1', 30);
-        createFlowers('flowers2', 25);
-        createFlowers('flowers3', 40);
-    </script>
+    // Initialize Calendar, Pages, and Continuous Flowers
+    generateCalendar();
+    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+    document.getElementById('page0').classList.add('active');
+    startContinuousFlowers();
+  </script>
 </body>
 </html>
